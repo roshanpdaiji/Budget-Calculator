@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<style>
+      .nav h1 {
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        font-size: large;
+        margin-top: 10px;
+        margin-left: 10px;
+    }
+
+    .head h1 {
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    }
+
+    .underline {
+        display: block; /* Makes the underline appear below the text */
+        width: 80%; /* Full width */
+        height: 3px; /* Height of the underline */
+        background-color: rgb(154, 39, 138); /* Color of the underline */
+        margin-left: 130px;
+        margin-top: 5px; /* Space between the text and the underline */
+    }
+
+    .balance, .expense {
+        margin-left: 30px;
+        margin-top: 40px;
+    }
+
+    .addincome {
+        color: rgb(45, 153, 141);
+    }
+
+    .addexpense {
+        color: rgb(73, 105, 199);
+    }
+
+    .square-box1, .square-box2 {
+        background-color: rgb(45, 153, 141); /* Default background color */
+        margin-left: 50px;
+        height: 100px; /* Square height */
+        display: flex; /* Use flexbox to center the text */
+        flex-direction: column; /* Arrange items in a column */
+        align-items: center; /* Center items horizontally */
+        justify-content: center; /* Center items vertically */
+        border-radius: 8px; /* Optional: add some rounded corners */
+        color: white; /* Change text color to white for better contrast */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); /* Thicker box shadow effect */
+    }
+
+    .square-box2 {
+        background-color: rgb(73, 105, 199); /* Background color for expense box */
+    }
+
+    .custom-btn, .custom-btn1 {
+        background-color: #111010; /* Change this to your desired color */
+        color: white; /* Text color */
+        border: none; /* Remove border */
+    }
+
+    .custom-btn:hover, .custom-btn1:hover {
+        background-color: #691065; /* Darker shade for hover effect */
+        color: white; /* Keep text color white on hover */
+    }
+
+    .btn-secondary {
+        background-color: #c10f0f;
+        margin-top: 20px;
+        margin-left: 100px;
+    }
+
+    .card1 h3 {
+        margin-top: 60px;
+        margin-bottom: 30px;
+    }
+
+    .col-6 {
+        margin-left: 40px;
+    }
+
+    /*Table*/
+    .table h3 {
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        padding-top: 50px;
+    }
+
+    table {
+        border: 6px solid #000; /* Dark border for the table */
+    }
+
+    table th, table td {
+        border: 20px solid #0d0b0b; /* Dark border for the cells */
+    }
+
+    .nav {
+    position: relative;
+    padding: 10px;
+}
+
+.nav h1 {
+    margin: 0; /* Remove margin for better alignment */
+}
+
+.btnlogout {
+    position: absolute;
+    right: 10px; /* Align to the right */
+}
+
+
+#chartContainer {
+            display: none; /* Hide the chart by default */
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        canvas {
+            max-width: 500px;
+            margin: auto;
+        }
+</style>
+
+<body>
+
+<div class="nav" style="display: flex; justify-content: space-between; align-items: center; padding: 10px;">
+    <h1 id="head1"><i class="fa-solid fa-user fa-bounce" style="color: #161718;"></i> Welcome User</h1>
+    <button type="button" class="btn custom-btn btnlogout" onclick="logout()">Logout <i class="fa-solid fa-right-from-bracket" style="color: #d1d4da;"></i></button>
+</div>
+
+<h1 class="head text-center">
+    <span style="color: rgb(97, 27, 97);">S</span>mart <span style="color: rgb(101, 26, 101);">W</span>allet
+    <span class="underline"></span>
+</h1>
+
+<div class="row">
+    <div class="col-1"></div>
+
+    <div class="col-5 balance">
+        <div class="square-box1">
+            <h2>Total Balance</h2>
+            <h1 id="totalBalance">Rs 0/-</h1>
+        </div>
+
+        <div class="card1">
+            <form onsubmit="event.preventDefault(); addIncome();">
+                <h3 class="text-center addincome">Add Income</h3>
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="incomeType" placeholder="Enter Income type">
+                </div>
+                <div class="mb-3">
+                    <input type="number" class="form-control" id="incomeAmount" placeholder="Enter Amount">
+                </div>
+                <button type="submit" class="btn custom-btn1 w-100">Add Income</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-5 expense">
+        <div class="square-box2">
+            <h2>Total Expense</h2>
+            <h1 id="totalExpense">Rs 0/-</h1>
+        </div>
+
+        <div class="card1">
+            <form onsubmit="event.preventDefault(); addExpense();">
+                <h3 class="text-center addexpense">Add Expense</h3>
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="expenseType" placeholder="Enter Expense Type">
+                </div>
+                <div class="mb-3">
+                    <input type="number" class="form-control" id="expenseAmount" placeholder="Enter Amount">
+                </div>
+                <button type="submit" class="btn custom-btn1 w-100">Add Expense</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-1"></div>
+</div>
+
+<div class="d-flex justify-content-center mt-3">
+    <button type="button" class="btn btn-secondary clear" onclick="clearAll()">Clear All</button>
+</div>
+
+<!--Table-->
+<div class="table">
+    <h3 class="text-center">Income and Expense Details</h3>
+    <span class="underline"></span>
+
+    <div class="row">
+        <div class="col-1"></div>
+
+        <div class="col-5">
+            <h3 class="text-center">Income</h3>
+            <table class="table table-bordered text-center" id="incomeTable" style="background-color: #28a745; color: white;">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="incomeList"></tbody>
+            </table>
+        </div>
+
+        <div class="col-5">
+            <h3 class="text-center">Expense</h3>
+            <table class="table table-bordered text-center" id="expenseTable" style="background-color: #dc3545; color: white;">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="expenseList"></tbody>
+            </table>
+        </div>
+
+        <div class="col-1"></div>
+    </div>
+
+    <div class="d-flex justify-content-center mt-3">
+        <button type="button" class="btn btn-info" onclick="displayPieChart()">Show Pie Chart</button>
+    </div>
+
+    <div id="chartContainer" style="display:none;">
+        <canvas id="expenseChart"></canvas>
+    </div>
+</div>
+
+<script>
+    let totalIncome = 0;
+    let totalExpense = 0;
+    let chartInstance = null;
+
+    // Display username
+    username = localStorage.getItem('USERNAME');
+    head1.innerHTML = `Welcome ${username}`;
+
+    // Update total balance
+    function updateBalance() {
+        const totalBalance = totalIncome - totalExpense;
+        document.getElementById('totalBalance').innerText = `Rs ${totalBalance}/-`;
+        document.getElementById('totalExpense').innerText = `Rs ${totalExpense}/-`;
+    }
+
+    // Add income
+    function addIncome() {
+        const incomeType = document.getElementById('incomeType').value;
+        const incomeAmount = parseFloat(document.getElementById('incomeAmount').value);
+        const date = new Date().toLocaleDateString();
+
+        if (incomeType && !isNaN(incomeAmount) && incomeAmount > 0) {
+            totalIncome += incomeAmount;
+            const incomeList = document.getElementById('incomeList');
+            const row = incomeList.insertRow();
+            row.insertCell(0).innerText = incomeType;
+            row.insertCell(1).innerText = `Rs ${incomeAmount}/-`;
+            row.insertCell(2).innerText = date;
+
+            updateBalance();
+            document.getElementById('incomeType').value = '';
+            document.getElementById('incomeAmount').value = '';
+        } else {
+            alert('Please enter a valid income type and amount.');
+        }
+    }
+
+    // Add expense
+    function addExpense() {
+        const expenseType = document.getElementById('expenseType').value;
+        const expenseAmount = parseFloat(document.getElementById('expenseAmount').value);
+        const date = new Date().toLocaleDateString();
+
+        if (expenseType && !isNaN(expenseAmount) && expenseAmount > 0) {
+            totalExpense += expenseAmount;
+            const expenseList = document.getElementById('expenseList');
+            const row = expenseList.insertRow();
+            row.insertCell(0).innerText = expenseType;
+            row.insertCell(1).innerText = `Rs ${expenseAmount}/-`;
+            row.insertCell(2).innerText = date;
+
+            updateBalance();
+            document.getElementById('expenseType').value = '';
+            document.getElementById('expenseAmount').value = '';
+        } else {
+            alert('Please enter a valid expense type and amount.');
+        }
+    }
+
+    // Display Pie chart for Income vs Expense
+    function displayPieChart() {
+        const chartContainer = document.getElementById('chartContainer');
+        chartContainer.style.display = 'block';
+
+        const ctx = document.getElementById('expenseChart').getContext('2d');
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+
+        chartInstance = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Income', 'Expense'],
+                datasets: [{
+                    data: [totalIncome, totalExpense],
+                    backgroundColor: ['#28a745', '#dc3545'],
+                }]
+            }
+        });
+    }
+
+    
+    // Clear all entries
+    function clearAll() {
+        totalIncome = 0;
+        totalExpense = 0;
+        document.getElementById('incomeList').innerHTML = '';
+        document.getElementById('expenseList').innerHTML = '';
+        updateBalance();
+
+        // Reset the chart
+        if (chartInstance) {
+            chartInstance.destroy();
+            chartInstance = null; // Clear the reference to the chart instance
+        }
+        document.getElementById('chartContainer').style.display = 'none'; // Hide the chart container
+    }
+
+
+    // Logout function
+    function logout() {
+        localStorage.clear();
+        window.location.href = "login.html"; // Redirect to login page
+    }
+
+
+</script>
+</body>
+</html>
+       
