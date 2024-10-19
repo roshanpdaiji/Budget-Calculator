@@ -124,7 +124,18 @@
     <script>
 
 function Register() {
-    window.location="./index.html"
+    // Get the values of the input fields
+    var username = document.getElementById("username").value;
+    var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value;
+
+    // Check if any field is empty
+    if (username === "" || email === "" || password === "") {
+        alert("Please fill in all the fields.");
+    } else {
+        // If all fields are filled, proceed with registration
+        window.location = "./index.html";
+    }
 }
     </script>
 
